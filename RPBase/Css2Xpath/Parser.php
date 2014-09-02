@@ -87,7 +87,7 @@ class Parser
     }
 
     /**
-     * @return \RPBase\XQuery\Css2Xpath
+     * @return Parser
      * @throws MalformedCssExpressionException
      */
     protected function _parse()
@@ -112,7 +112,7 @@ class Parser
     /**
      * Extracts the rules in a CSS selector
      *
-     * @return \RPBase\XQuery\Css2Xpath
+     * @return array
      * @throws MalformedCssExpressionException
      */
     protected function extractRules()
@@ -355,6 +355,7 @@ class Parser
      *
      * @param array $pseudo_selector
      * @return string
+     * @throws MalformedCssExpressionException
      */
     protected function mkXpathPseudoSelector($pseudo_selector)
     {
@@ -390,6 +391,7 @@ class Parser
      *
      * @param array $rules
      * @return string
+     * @throws MalformedCssExpressionException
      */
     protected function rules2Xpath($rules)
     {
