@@ -1,0 +1,8 @@
+{
+    "name": "rohm1/css2xpath",
+    "autoload": {
+        "psr-0": {
+            "RPBase\\": ""
+        }
+    }
+}
