@@ -87,7 +87,7 @@ class Parser
     }
 
     /**
-     * @return Parser
+     * @return \RPBase\XQuery\Css2Xpath
      * @throws MalformedCssExpressionException
      */
     protected function _parse()
@@ -112,7 +112,7 @@ class Parser
     /**
      * Extracts the rules in a CSS selector
      *
-     * @return array
+     * @return \RPBase\XQuery\Css2Xpath
      * @throws MalformedCssExpressionException
      */
     protected function extractRules()
@@ -188,11 +188,12 @@ class Parser
     /**
      * Return the character at the current offset
      *
+     * @param int $offsetIndex
      * @return string
      */
-    protected function getChar()
+    protected function getChar($offsetIndex = 0)
     {
-        return substr($this->selector, $this->offset, 1);
+        return substr($this->selector, $this->offset + $offsetIndex, 1);
     }
 
     /**
@@ -272,11 +273,11 @@ class Parser
         $pseudo_selector['name'] = substr($this->selector, $this->offset + 1, $i - 1);
         $this->offset += $i;
 
-        if (substr($this->selector, $this->offset, 1) == '(') {
+        if ($this->getChar() == '(') {
             $i = 1;
             $openned = 1;
             while ($this->offset + $i < $this->length && $openned != 0) {
-                $crt_char = $this->getChar();
+                $crt_char = $this->getChar($i);
                 if ($crt_char == '(') {
                     $openned++;
                 } elseif ($crt_char == ')') {
@@ -355,7 +356,6 @@ class Parser
      *
      * @param array $pseudo_selector
      * @return string
-     * @throws MalformedCssExpressionException
      */
     protected function mkXpathPseudoSelector($pseudo_selector)
     {
@@ -391,7 +391,6 @@ class Parser
      *
      * @param array $rules
      * @return string
-     * @throws MalformedCssExpressionException
      */
     protected function rules2Xpath($rules)
     {
