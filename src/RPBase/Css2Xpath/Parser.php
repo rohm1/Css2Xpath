@@ -87,7 +87,7 @@ class Parser
     }
 
     /**
-     * @return \RPBase\XQuery\Css2Xpath
+     * @return Parser
      * @throws MalformedCssExpressionException
      */
     protected function _parse()
@@ -112,7 +112,7 @@ class Parser
     /**
      * Extracts the rules in a CSS selector
      *
-     * @return \RPBase\XQuery\Css2Xpath
+     * @return array
      * @throws MalformedCssExpressionException
      */
     protected function extractRules()
@@ -204,27 +204,28 @@ class Parser
     protected function extractAttributeValue()
     {
         $this->offset++;
-        return $this->extract('/^[a-zA-Z0-9_-]$/');
+        return $this->extract('/[^"\[ ]/');
     }
 
     /**
      * Extracts the matcher type for an attribute
      *
      * @return string
+     * @throws MalformedCssExpressionException
      */
     protected function extractAttributeMatcher()
     {
-        $matcher = $this->extract('/^[\!\=\^\$\*\|\~]$/');
+        $matcher = $this->extract('/^[\*\|\~\^\$\!]?=?$/');
 
         switch ($matcher) {
             case '='  : return 'same';
+            case '*=' : return 'contains';
             case '|=' : return 'contains-prefix';
             case '~=' : return 'contains-word';
-            case '$=' : return 'end';
             case '^=' : return 'start';
+            case '$=' : return 'end';
             case '!=' : return 'not';
             case ''   : return 'none';
-            default   : throw new MalformedCssExpressionException('Unrecognized matcher at offset ' . $this->offset . ': \'' . $matcher . '\'');
         }
     }
 
@@ -332,6 +333,9 @@ class Parser
                 // this is ugly!
                 return 'contains(concat(@' . $attribute['type'] . ', "___"), "' . $attribute['value'] . '___")';
 
+            case 'contains':
+                return 'contains(@' . $attribute['type'] . ', "' . $attribute['value'] . '")';
+
             case 'contains-word'   :
                 return 'contains(concat(" ", @' . $attribute['type'] . ', " "), " ' . $attribute['value'] . ' ")';
 
@@ -347,7 +351,6 @@ class Parser
 
             case 'none'            :
                 return '@' . $attribute['type'];
-
         }
     }
 
@@ -356,6 +359,7 @@ class Parser
      *
      * @param array $pseudo_selector
      * @return string
+     * @throws MalformedCssExpressionException
      */
     protected function mkXpathPseudoSelector($pseudo_selector)
     {
@@ -372,17 +376,17 @@ class Parser
                     return 'position() = ' . $position;
                 }
 
-                preg_match_all('/^(\-)?([0-9]+)?(\+|\-)?([0-9])+(n)?(\+|\-)?(\-?[0-9]+)?/', $position, $params);
+                $position = preg_replace('/\s/', '', $position);
+
+                preg_match_all('/^(\-)?([0-9]+)?(\+|\-)?([0-9])+(n)?(\+|\-)?(\-?[0-9]+)?$/', $position, $params);
+
                 $offset = ($params[1][0] == '-' ? -$params[2][0] : $params[2][0]) + ($params[6][0] == '-' ? -$params[7][0] : $params[7][0]);
                 $factor = $params[3][0] == '-' ? -$params[4][0] : $params[4][0];
-
-                return '(position() + ' . (-$offset) . ') mod ' . $factor . ' = 0' . ($offset >= 0 ? ' and position() >= ' .$offset : '');
+                return '(position() ' . ($offset > 0 ? '-' : '+') . ' ' . abs($offset) . ') mod ' . $factor . ' = 0' . ($offset >= 0 ? ' and position() >= ' .$offset : '');
 
             case 'not':
                 // not value is a CSS selector: parse it
                 return 'not(' . preg_replace('%^(/\*/(descendant::)?\*\[)(.*)(\])%U', '$3', self::parse($pseudo_selector['value'])) . ')';
-
-            default: throw new MalformedCssExpressionException('Unrecognized pseudo selector \'' . $pseudo_selector['name'] . '\'');
         }
     }
 

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="http://schema.phpunit.de/4.2/phpunit.xsd"
+    colors="true"
+    bootstrap="tests/bootstrap.php">
+
+    <testsuites>
+        <testsuite name="css2xpath">
+            <directory suffix="Test.php">./tests/RPBaseTest/Css2Xpath</directory>
+        </testsuite>
+    </testsuites>
+
+</phpunit>

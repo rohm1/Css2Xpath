@@ -16,6 +16,7 @@ Css2Xpath
  * [attribute="value"]
  * [attribute^="value"]
  * [attribute$="value"]
+ * [attribute*="value"]
  * [attribute|="value"]
  * [attribute~="value"]
  * [attribute!="value"]
