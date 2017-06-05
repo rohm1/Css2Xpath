@@ -135,7 +135,7 @@ class Parser
                     'matcher' => $attr['matcher'],
                 ];
 
-            } elseif (preg_match('/^[a-zA-Z]$/', $crt_char)) {
+            } elseif (preg_match('/^[a-zA-Z0-9]$/', $crt_char)) {
                 $crt_rule['tag_name'] = $this->extractTagName();
             } elseif ($crt_char == '*') {
                 $this->offset++;
@@ -236,7 +236,7 @@ class Parser
      */
     protected function extractTagName()
     {
-        return $this->extract('/^[a-zA-Z]$/');
+        return $this->extract('/^[a-zA-Z0-9]$/');
     }
 
     /**

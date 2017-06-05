@@ -4,9 +4,8 @@ namespace RPBaseTest\Css2Xpath;
 
 use RPBase\Css2Xpath\Parser;
 
-class ParserTest extends \PHPUnit_Framework_TestCase
+class ParserTest extends \PHPUnit\Framework\TestCase
 {
-
     public function testExtractAnySelector()
     {
         $this->assertEquals('/*/descendant::*', Parser::parse('*'));
@@ -15,6 +14,11 @@ class ParserTest extends \PHPUnit_Framework_TestCase
     public function testExtractRulesTagName()
     {
         $this->assertEquals('/*/descendant::*[name() = "span"]', Parser::parse('span'));
+    }
+
+    public function testExtractRulesTagNameWithNumber()
+    {
+        $this->assertEquals('/*/descendant::*[name() = "h1"]', Parser::parse('h1'));
     }
 
     public function testExtractRulesId()
@@ -69,7 +73,8 @@ class ParserTest extends \PHPUnit_Framework_TestCase
 
     public function testExtractRuleAttributeWithOtherMatcherWillThrowAnException()
     {
-        $this->setExpectedException('RPBase\Css2Xpath\MalformedCssExpressionException', "]' expected at offset 5, was '+'");
+        $this->expectException('RPBase\Css2Xpath\MalformedCssExpressionException');
+        $this->expectExceptionMessage("]' expected at offset 5, was '+'");
         Parser::parse('[href+"url"]');
     }
 
@@ -132,5 +137,4 @@ class ParserTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertEquals('/*/descendant::*[@id="id"]/*', Parser::parse('#id > *'));
     }
-
 }
